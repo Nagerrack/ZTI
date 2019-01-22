@@ -1,18 +1,18 @@
 from PyQt5.QtCore import QRegExp, Qt
 from PyQt5.QtGui import QSyntaxHighlighter, QTextCharFormat, QColor
 
-Activity = ["olaf"]
-Agent = ["jest"]
-Award = ["spoko"]
-Disease = ["wielki"]
-EthnicGroup = ["test"]
-Event = ["dzialania"]
-Language = ["programu"]
-MeanOfTransportation = ["na"]
-PersonFunction = ["zajecia"]
-Place = ["z"]
-Species = ["panem"]
-Work = ["bakiem"]
+Activity = []
+Agent = []
+Award = []
+Disease = []
+EthnicGroup = []
+Event = []
+Language = []
+MeanOfTransportation = []
+PersonFunction = []
+Place = []
+Species = []
+Work = []
 
 class Highlighter(QSyntaxHighlighter):
 

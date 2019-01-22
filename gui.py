@@ -50,66 +50,42 @@ class Window(Qt5.QWidget):
             for col in range(4):
                 if iter <= dl:
                     item = QTableWidgetItem(lista[iter])
-                    if col == 0 or col == 1:
-                        for s in highlight.Activity:
-                            if s == lista[iter]:
-                                item.setForeground(QColor(1, 138, 9))
-                                break
+                    if col == 1:
+                        if "Activity" == lista[iter]:
+                            item.setForeground(QColor(1, 138, 9))
 
-                        for s in highlight.Agent:
-                            if s == lista[iter]:
-                                item.setForeground(QColor(115, 77, 38))
-                                break
+                        if "Agent" == lista[iter]:
+                            item.setForeground(QColor(115, 77, 38))
 
-                        for s in highlight.Award:
-                            if s == lista[iter]:
-                                item.setForeground(QColor(223, 97, 0))
-                                break
+                        if "Award" == lista[iter]:
+                            item.setForeground(QColor(223, 97, 0))
 
-                        for s in highlight.Disease:
-                            if s == lista[iter]:
-                                item.setForeground(QColor(255, 4, 38))
-                                break
+                        if "Disease" == lista[iter]:
+                            item.setForeground(QColor(255, 4, 38))
 
-                        for s in highlight.EthnicGroup:
-                            if s == lista[iter]:
-                                item.setForeground(QColor(249, 225, 0))
-                                break
+                        if "EthnicGroup" == lista[iter]:
+                            item.setForeground(QColor(249, 225, 0))
 
-                        for s in highlight.Event:
-                            if s == lista[iter]:
-                                item.setForeground(QColor(4, 254, 0))
-                                break
+                        if "Event" == lista[iter]:
+                            item.setForeground(QColor(4, 254, 0))
 
-                        for s in highlight.Language:
-                            if s == lista[iter]:
-                                item.setForeground(QColor(4, 111, 150))
-                                break
+                        if "Language" == lista[iter]:
+                            item.setForeground(QColor(4, 111, 150))
 
-                        for s in highlight.MeanOfTransportation:
-                            if s == lista[iter]:
-                                item.setForeground(QColor(250, 21, 154))
-                                break
+                        if "MeanOfTransportation" == lista[iter]:
+                            item.setForeground(QColor(250, 21, 154))
 
-                        for s in highlight.PersonFunction:
-                            if s == lista[iter]:
-                                item.setForeground(QColor(0, 2, 254))
-                                break
+                        if "PersonFunction" == lista[iter]:
+                            item.setForeground(QColor(0, 2, 254))
 
-                        for s in highlight.Place:
-                            if s == lista[iter]:
-                                item.setForeground(QColor(128, 131, 145))
-                                break
+                        if "Place" == lista[iter]:
+                            item.setForeground(QColor(128, 131, 145))
 
-                        for s in highlight.Species:
-                            if s == lista[iter]:
-                                item.setForeground(QColor(251, 128, 145))
-                                break
+                        if "Species" == lista[iter]:
+                            item.setForeground(QColor(251, 128, 145))
 
-                        for s in highlight.Work:
-                            if s == lista[iter]:
-                                item.setForeground(QColor(0, 153, 255))
-                                break
+                        if "Work" == lista[iter]:
+                            item.setForeground(QColor(0, 153, 255))
 
                     self.tb.setItem(row, col, item)
 
@@ -122,7 +98,7 @@ class Window(Qt5.QWidget):
 
     def btn_clk(self):
         sender = self.sender()
-        lista = ["olaf", "jest", "c", "d","spoko", "wielki", "c", "d","test", "dzialania", "c", "d","programu", "na", "c", "d","zajecia", "z", "c", "d","panem","bakiem","c","d"]
+        lista = ["a","Activity","c","d","a","Work","c","d"]
         if sender.text() == 'Print':
 
             print(self.le.toPlainText())
