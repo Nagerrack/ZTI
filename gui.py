@@ -1,6 +1,10 @@
 import sys
 from PyQt5 import QtWidgets as Qt5
+from PyQt5.QtWidgets import QTableWidgetItem
+from PyQt5.QtGui import QColor
 import highlight
+
+
 
 class Window(Qt5.QWidget):
 
@@ -36,16 +40,77 @@ class Window(Qt5.QWidget):
         self.b1.clicked.connect(self.btn_clk)
         self.b2.clicked.connect(self.btn_clk)
 
+
         self.show()
+
+    def fill_table(self, lista):
+        iter = 0
+        dl = len(lista)-1
+        for row in range(int((dl+1)/4)):
+            for col in range(4):
+                if iter <= dl:
+                    item = QTableWidgetItem(lista[iter])
+                    if col == 1:
+                        if "Activity" == lista[iter]:
+                            item.setForeground(QColor(1, 138, 9))
+
+                        if "Agent" == lista[iter]:
+                            item.setForeground(QColor(115, 77, 38))
+
+                        if "Award" == lista[iter]:
+                            item.setForeground(QColor(223, 97, 0))
+
+                        if "Disease" == lista[iter]:
+                            item.setForeground(QColor(255, 4, 38))
+
+                        if "EthnicGroup" == lista[iter]:
+                            item.setForeground(QColor(249, 225, 0))
+
+                        if "Event" == lista[iter]:
+                            item.setForeground(QColor(4, 254, 0))
+
+                        if "Language" == lista[iter]:
+                            item.setForeground(QColor(4, 111, 150))
+
+                        if "MeanOfTransportation" == lista[iter]:
+                            item.setForeground(QColor(250, 21, 154))
+
+                        if "PersonFunction" == lista[iter]:
+                            item.setForeground(QColor(0, 2, 254))
+
+                        if "Place" == lista[iter]:
+                            item.setForeground(QColor(128, 131, 145))
+
+                        if "Species" == lista[iter]:
+                            item.setForeground(QColor(251, 128, 145))
+
+                        if "Work" == lista[iter]:
+                            item.setForeground(QColor(0, 153, 255))
+
+                    self.tb.setItem(row, col, item)
+
+                    iter = iter + 1
+                else:
+                    iter=0
+                    self.tb.setItem(row, col, QTableWidgetItem(lista[iter]))
+                    iter = iter + 1
+
+
     def btn_clk(self):
         sender = self.sender()
+        lista = ["a","Activity","c","d","a","Work","c","d"]
         if sender.text() == 'Print':
 
             print(self.le.toPlainText())
             self.highlighter = highlight.Highlighter(self.tx.document())
             self.tx.setText(self.le.toPlainText())
+            self.fill_table(lista)
+
         else:
             self.le.clear()
+
+
+
 
 app = Qt5.QApplication(sys.argv)
 a_window = Window()
