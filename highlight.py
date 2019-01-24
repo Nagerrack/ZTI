@@ -1,21 +1,33 @@
-from PyQt5.QtCore import QRegExp, Qt
+from PyQt5.QtCore import QRegExp
 from PyQt5.QtGui import QSyntaxHighlighter, QTextCharFormat, QColor
 
-Activity = []
-Agent = []
-Award = []
-Disease = []
-EthnicGroup = []
-Event = []
-Language = []
-MeanOfTransportation = []
-PersonFunction = []
-Place = []
-Species = []
-Work = []
+types = ['Activity', 'Agent', 'Award', 'Disease', 'EthnicGroup',
+         'Event', 'Language', 'MeanOfTransportation', 'PersonFunction',
+         'Place', 'Species', 'Work']
+
+colors = [QColor(1, 138, 9),
+          QColor(115, 77, 38),
+          QColor(223, 97, 0),
+          QColor(255, 4, 38),
+          QColor(249, 225, 0),
+          QColor(4, 254, 0),
+          QColor(4, 111, 150),
+          QColor(250, 21, 154),
+          QColor(0, 2, 254),
+          QColor(128, 131, 145),
+          QColor(251, 128, 145),
+          QColor(0, 153, 255)
+          ]
+
+color_dict = dict(zip(types, colors))
+
+entity_dict = {entity_type: [] for entity_type in types}
+
+#entity_dict['Event'].extend('Battle of Kursk'.split())
+#entity_dict['Species'].extend('Cheetah Cat Dog'.split())
+
 
 class Highlighter(QSyntaxHighlighter):
-
 
     def __init__(self, parent=None):
         super(Highlighter, self).__init__(parent)
@@ -25,81 +37,21 @@ class Highlighter(QSyntaxHighlighter):
         keywordPatterns = []
 
         self.highlightingRules = [(QRegExp(pattern), keywordFormat)
-                for pattern in keywordPatterns]
+                                  for pattern in keywordPatterns]
 
-        for s in Activity:
-            quotationFormat = QTextCharFormat()
-            quotationFormat.setForeground(QColor(1, 138, 9)) ##ciemno zielony
-            self.highlightingRules.append((QRegExp('\\b' + s + '\\b'), quotationFormat))
-
-        for s in Agent:
-            quotationFormat = QTextCharFormat()
-            quotationFormat.setForeground(QColor(115, 77, 38)) ##brązwoy
-            self.highlightingRules.append((QRegExp('\\b' + s + '\\b'), quotationFormat))
-
-        for s in Award:
-            quotationFormat = QTextCharFormat()
-            quotationFormat.setForeground(QColor(223, 97, 0)) ##pomaranczowy
-            self.highlightingRules.append((QRegExp('\\b' + s + '\\b'), quotationFormat))
-
-        for s in Disease:
-            quotationFormat = QTextCharFormat()
-            quotationFormat.setForeground(QColor(255, 4, 38)) ##czerwony
-            self.highlightingRules.append((QRegExp('\\b' + s + '\\b'), quotationFormat))
-
-        for s in EthnicGroup:
-            quotationFormat = QTextCharFormat()
-            quotationFormat.setForeground(QColor(249, 225, 0)) ##żółty
-            self.highlightingRules.append((QRegExp('\\b' + s + '\\b'), quotationFormat))
-
-        for s in Event:
-            quotationFormat = QTextCharFormat()
-            quotationFormat.setForeground(QColor(4, 254, 0)) ##jasno zielony
-            self.highlightingRules.append((QRegExp('\\b' + s + '\\b'), quotationFormat))
-
-        for s in Language:
-            quotationFormat = QTextCharFormat()
-            quotationFormat.setForeground(QColor(4, 111, 150)) ##ciemny cyan
-            self.highlightingRules.append((QRegExp('\\b' + s + '\\b'), quotationFormat))
-
-        for s in MeanOfTransportation:
-            quotationFormat = QTextCharFormat()
-            quotationFormat.setForeground(QColor(250, 21, 154)) ##jakis róż
-            self.highlightingRules.append((QRegExp('\\b' + s + '\\b'), quotationFormat))
-
-        for s in PersonFunction:
-            quotationFormat = QTextCharFormat()
-            quotationFormat.setForeground(QColor(0, 2, 254)) ##ciemny niebieski
-            self.highlightingRules.append((QRegExp('\\b' + s + '\\b'), quotationFormat))
-
-        for s in Place:
-            quotationFormat = QTextCharFormat()
-            quotationFormat.setForeground(QColor(128, 131, 145)) ##szary
-            self.highlightingRules.append((QRegExp('\\b' + s + '\\b'), quotationFormat))
-
-        for s in Species:
-            quotationFormat = QTextCharFormat()
-            quotationFormat.setForeground(QColor(251, 128, 145)) ##łososiowy
-            self.highlightingRules.append((QRegExp('\\b' + s + '\\b'), quotationFormat))
-
-        for s in Work:
-            quotationFormat = QTextCharFormat()
-            quotationFormat.setForeground(QColor(0, 153, 255)) ##jasny niebieski
-            self.highlightingRules.append((QRegExp('\\b' + s + '\\b'), quotationFormat))
-
-        stri = 'Bergmann'
-        quotationFormat = QTextCharFormat()
-        quotationFormat.setForeground(QColor(255, 255, 255))
-        self.highlightingRules.append((QRegExp('\\b' + stri + '\\b'), quotationFormat))
-
+        for entity_type in entity_dict:
+            for item in entity_dict[entity_type]:
+                quotationFormat = QTextCharFormat()
+                quotationFormat.setForeground(color_dict[entity_type])
+                self.highlightingRules.append((QRegExp('\\b' + item + '\\b'), quotationFormat))
 
     def highlightBlock(self, text):
-        for pattern, format in self.highlightingRules:
+        for pattern, text_format in self.highlightingRules:
             expression = QRegExp(pattern)
             index = expression.indexIn(text)
             while index >= 0:
                 length = expression.matchedLength()
-                self.setFormat(index, length, format)
+                self.setFormat(index, length, text_format)
                 index = expression.indexIn(text, index + length)
 
         self.setCurrentBlockState(0)
