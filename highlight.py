@@ -1,9 +1,7 @@
 from PyQt5.QtCore import QRegExp
 from PyQt5.QtGui import QSyntaxHighlighter, QTextCharFormat, QColor
 
-types = ['Activity', 'Agent', 'Award', 'Disease', 'EthnicGroup',
-         'Event', 'Language', 'MeanOfTransportation', 'PersonFunction',
-         'Place', 'Species', 'Work']
+from configuration_data import types
 
 colors = [QColor(1, 138, 9),
           QColor(115, 77, 38),
@@ -23,8 +21,9 @@ color_dict = dict(zip(types, colors))
 
 entity_dict = {entity_type: [] for entity_type in types}
 
-#entity_dict['Event'].extend('Battle of Kursk'.split())
-#entity_dict['Species'].extend('Cheetah Cat Dog'.split())
+
+# entity_dict['Event'].extend('Battle of Kursk'.split())
+# entity_dict['Species'].extend('Cheetah Cat Dog'.split())
 
 
 class Highlighter(QSyntaxHighlighter):
@@ -32,18 +31,18 @@ class Highlighter(QSyntaxHighlighter):
     def __init__(self, parent=None):
         super(Highlighter, self).__init__(parent)
 
-        keywordFormat = QTextCharFormat()
+        keyword_format = QTextCharFormat()
 
-        keywordPatterns = []
+        keyword_patterns = []
 
-        self.highlightingRules = [(QRegExp(pattern), keywordFormat)
-                                  for pattern in keywordPatterns]
+        self.highlightingRules = [(QRegExp(pattern), keyword_format)
+                                  for pattern in keyword_patterns]
 
         for entity_type in entity_dict:
             for item in entity_dict[entity_type]:
-                quotationFormat = QTextCharFormat()
-                quotationFormat.setForeground(color_dict[entity_type])
-                self.highlightingRules.append((QRegExp('\\b' + item + '\\b'), quotationFormat))
+                quotation_format = QTextCharFormat()
+                quotation_format.setForeground(color_dict[entity_type])
+                self.highlightingRules.append((QRegExp('\\b' + item + '\\b'), quotation_format))
 
     def highlightBlock(self, text):
         for pattern, text_format in self.highlightingRules:
