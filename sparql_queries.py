@@ -12,6 +12,8 @@ def get_url_by_name(word):
                FILTER (?s = dbpedia:""" + word + """)
             }"""
 
+
+    #FILTER regex(?s, """+ word +""")
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
     results = sparql.query().convert()
@@ -102,14 +104,18 @@ def get_url_by_type(type, number):
 
 def get_types_by_url(url):
     resource = url.replace('http://dbpedia.org/resource/', '')
+    resource = resource.replace('.', '')
+    resource = resource.replace("'", '')
     sparql = SPARQLWrapper("http://dbpedia.org/sparql")
     query = """
                     PREFIX dbo:  <http://dbpedia.org/ontology/>
                     PREFIX dbpedia: <http://dbpedia.org/resource/>
                     SELECT DISTINCT ?subject ?type
                     WHERE{ 
-                       dbpedia: """ + resource + """ a ?type.
-                       FILTER regex(?type, "http://dbpedia.org/ontology/")
+                        ?subject rdf:type ?type .
+                   FILTER (?subject
+                    = dbpedia:""" + resource + """)
+                   FILTER regex(?type, "http://dbpedia.org/ontology/")
                     }"""
 
     sparql.setQuery(query)

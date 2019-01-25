@@ -1,3 +1,5 @@
+import re
+
 import rdflib as rd
 from rdflib import Namespace
 
@@ -46,13 +48,29 @@ def graph_to_train_samples(graph):
 
 
 def get_type_from_db(url):
+    if 'aksw' in url:
+        return 'Not_on_wiki'
+    # if ',' or '(' or ')' in url:
+    #     return 'Not_on_wiki'
+    url = url.replace(',', '')
+    url = url.replace('(', '')
+    url = url.replace(')', '')
+    # if re.search('/[0-9]*[A-z]*_*.[0-9]*[A-z]*_*$', url) is not None:
+    #     return 'Not_on_wiki'
+
     db_types = get_types_by_url(url)
     mutual_types = set(types).intersection(db_types)
-    if not len(mutual_types) > 0:
+    if len(mutual_types) > 0:
         entity_type = mutual_types.pop()
     else:
         entity_type = 'Not_found'
     return entity_type
+
+def find_next(string, substrings, begin_pos):
+    for index, char in enumerate(string[begin_pos:]):
+        if char in substrings:
+            return begin_pos + index
+    return -1
 
 
 def create_and_save_dataset(corpus_name):
@@ -61,22 +79,21 @@ def create_and_save_dataset(corpus_name):
     sentences = graph_to_train_samples(g)
     with open(corpus_name, 'w', encoding='utf-8') as corpus_file:
         for sentence in sentences:
-            beginPos = 0
-            endPos = sentence.sentence.find(" ")
-            while endPos != -1:
-                word = sentence.sentence[beginPos:endPos]
-                for sign in ['.', ',', '!', '?', ':', ';', '"']:
-                    word = word.replace(sign, '')
-                isEntity = 0
-                for entity in sentence.associated_entities:
-                    if beginPos >= entity[2] and endPos <= entity[3]:
-                        isEntity = 1
-                        # entity_type = get_type_from_db(entity[1])
-                        corpus_file.write('{0}\t{1}\n'.format(word, entity[1]))
-                        print(word, entity[1])
-                        break
-                if isEntity == 0:
-                    corpus_file.write('{0}\t{1}\n'.format(word, 'Other'))
-                    print(word, 'Other')
-                beginPos = endPos + 1
-                endPos = sentence.sentence.find(" ", beginPos)
+            begin_pos = 0
+            end_pos = find_next(sentence.sentence, ['.', ',', '!', '?', ':', ';', '"', '“', '”', ' '], begin_pos)
+            while end_pos != -1:
+                word = sentence.sentence[begin_pos:end_pos]
+                is_entity = 0
+                if begin_pos != end_pos:
+                    for entity in sentence.associated_entities:
+                        if begin_pos >= entity[2] and end_pos <= entity[3]:
+                            is_entity = 1
+                            entity_type = get_type_from_db(entity[1])
+                            corpus_file.write('{0}\t{1}\n'.format(word, entity_type))
+                            print(word, entity[1])
+                            break
+                    if is_entity == 0:
+                        corpus_file.write('{0}\t{1}\n'.format(word, 'Other'))
+                        print(word, 'Other')
+                begin_pos = end_pos + 1
+                end_pos = find_next(sentence.sentence, ['.', ',', '!', '?', ':', ';', '"', '“', '”', ' '], begin_pos)

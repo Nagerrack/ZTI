@@ -5,6 +5,7 @@ from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QTableWidgetItem
 
 import highlight
+from tagger import use_tagger
 
 test = [('a', 'Agent', 'url1', '0'),
         ('b', 'MeanOfTransportation', 'url2', '1'),
@@ -16,6 +17,31 @@ test = [('a', 'Agent', 'url1', '0'),
         ('b', 'MeanOfTransportation', 'url2', '1'),
         ('b', 'MeanOfTransportation', 'url2', '1'),
         ('c', 'PersonFunction', 'url3', '1')]
+
+
+
+def cluster_entities(tagged):
+    entities = []
+    entity = ''
+    prev_class = 'Other'
+    for word, curr_class in tagged:
+        if curr_class != 'Other':
+            if entity == '':
+                entity += word
+            else:
+                if prev_class == curr_class:
+                    entity += ' ' + word
+                else:
+                    if entity != '':
+                        entities.append(entity)
+                    entity = ''
+        else:
+            if entity != '':
+                entities.append(entity)
+            entity = ''
+        prev_class = curr_class
+
+    print(entities)
 
 
 class Window(Qt5.QWidget):
@@ -69,7 +95,8 @@ class Window(Qt5.QWidget):
 
             print(self.input_text.toPlainText())
             self.highlighter = highlight.Highlighter(self.output_text.document())
-            self.output_text.setText(self.input_text.toPlainText())
+            output = use_tagger(self.input_text.toPlainText())
+            self.output_text.setText(str(output))
             self.fill_table(test)
 
         else:
