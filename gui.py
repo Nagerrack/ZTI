@@ -5,8 +5,8 @@ from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QTableWidgetItem
 
 import highlight
-from tagger import use_tagger
 from sparql_queries import get_url_by_name
+from tagger import use_tagger
 
 
 # test = [('a', 'Agent', 'url1', '0'),
@@ -19,6 +19,14 @@ from sparql_queries import get_url_by_name
 #         ('b', 'MeanOfTransportation', 'url2', '1'),
 #         ('b', 'MeanOfTransportation', 'url2', '1'),
 #         ('c', 'PersonFunction', 'url3', '1')]
+
+
+def prepare_highlight(tagged):
+    entity_dict = {entity_type: [] for _, entity_type in tagged}
+    for word, current_class in tagged:
+        entity_dict[current_class].append(word)
+
+    return entity_dict
 
 
 def cluster_entities(tagged):
@@ -135,12 +143,13 @@ class Window(Qt5.QWidget):
 
             sourcetext = self.input_text.toPlainText()
             print(sourcetext)
-            self.highlighter = highlight.Highlighter(self.output_text.document())
             output = use_tagger(sourcetext)
+            self.highlighter = highlight.Highlighter(self.output_text.document())
+            self.highlighter.define_highlighting_rules(prepare_highlight(output))
 
-            cluster_entities(output)
+            print(prepare_highlight(output))
 
-            self.output_text.setText(str(output))
+            self.output_text.setText(sourcetext)  # str(output)
             self.fill_table(get_table_data(output, sourcetext))
 
         else:
