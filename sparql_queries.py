@@ -3,27 +3,54 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 
 def get_url_by_name(word):
     sparql = SPARQLWrapper("http://dbpedia.org/sparql")
-    query = """
-            PREFIX dbo:  <http://dbpedia.org/ontology/>
-            PREFIX dbpedia: <http://dbpedia.org/resource/>
-            SELECT DISTINCT ?s
-            WHERE{ 
-               ?s ?k ?v. 
-               FILTER (?s = dbpedia:""" + word + """)
-            }"""
+    query = """PREFIX dbo:  <http://dbpedia.org/ontology/>
+      PREFIX dbpedia: <http://dbpedia.org/resource/>
+      SELECT DISTINCT ?subject ?type               
+      WHERE{ 
+       ?subject rdf:type dbo:Person.
+        ?subject rdfs:label ?label.
+       ?label bif:contains "'""" + word + """'"@en
+        
+      }
+      LIMIT 1"""
 
-
-    #FILTER regex(?s, """+ word +""")
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
     results = sparql.query().convert()
 
+    print(results)
+
     try:
-        url = results["results"]["bindings"][0]["s"]["value"]
+        url = results["results"]["bindings"][0]["subject"]['value']
     except:
         url = "No data found"
 
     return url
+
+
+# def get_url_by_name(word):
+#     sparql = SPARQLWrapper("http://dbpedia.org/sparql")
+#     query = """
+#             PREFIX dbo:  <http://dbpedia.org/ontology/>
+#             PREFIX dbpedia: <http://dbpedia.org/resource/>
+#             SELECT DISTINCT ?s
+#             WHERE{
+#                ?s ?k ?v.
+#                FILTER regex(?s, '""" + word + """')
+#             }"""
+#
+#     # OLD FILTER (?s = dbpedia:""" + word + """)
+#     # FILTER regex(?s, """+ word +""")
+#     sparql.setQuery(query)
+#     sparql.setReturnFormat(JSON)
+#     results = sparql.query().convert()
+#
+#     try:
+#         url = results["results"]["bindings"][0]["s"]["value"]
+#     except:
+#         url = "No data found"
+#
+#     return url
 
 
 def get_types_from_db(word):

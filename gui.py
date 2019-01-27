@@ -6,18 +6,19 @@ from PyQt5.QtWidgets import QTableWidgetItem
 
 import highlight
 from tagger import use_tagger
+from sparql_queries import get_url_by_name
 
-test = [('a', 'Agent', 'url1', '0'),
-        ('b', 'MeanOfTransportation', 'url2', '1'),
-        ('b', 'MeanOfTransportation', 'url2', '1'),
-        ('b', 'MeanOfTransportation', 'url2', '1'),
-        ('b', 'MeanOfTransportation', 'url2', '1'),
-        ('b', 'MeanOfTransportation', 'url2', '1'),
-        ('b', 'MeanOfTransportaaaation', 'url2', '1'),
-        ('b', 'MeanOfTransportation', 'url2', '1'),
-        ('b', 'MeanOfTransportation', 'url2', '1'),
-        ('c', 'PersonFunction', 'url3', '1')]
 
+# test = [('a', 'Agent', 'url1', '0'),
+#         ('b', 'MeanOfTransportation', 'url2', '1'),
+#         ('b', 'MeanOfTransportation', 'url2', '1'),
+#         ('b', 'MeanOfTransportation', 'url2', '1'),
+#         ('b', 'MeanOfTransportation', 'url2', '1'),
+#         ('b', 'MeanOfTransportation', 'url2', '1'),
+#         ('b', 'MeanOfTransportaaaation', 'url2', '1'),
+#         ('b', 'MeanOfTransportation', 'url2', '1'),
+#         ('b', 'MeanOfTransportation', 'url2', '1'),
+#         ('c', 'PersonFunction', 'url3', '1')]
 
 
 def cluster_entities(tagged):
@@ -42,6 +43,45 @@ def cluster_entities(tagged):
         prev_class = curr_class
 
     print(entities)
+    return entities
+
+
+def get_table_data(tagged, sourcetext):
+    entities = []
+    entity_text = ''
+    entity_class = ''
+    entity_url = 'URL'
+    entity_begin = 0
+    entity_end = 0
+
+    prev_class = 'Other'
+    for word, curr_class in tagged:
+        if curr_class != 'Other':
+            if entity_text == '':
+                entity_text += word
+                entity_class = curr_class
+            else:
+                if prev_class == curr_class:
+                    entity_text += ' ' + word
+                else:
+                    if entity_text != '':
+                        entity_begin = sourcetext.find(entity_text)
+                        entity_end = entity_begin + len(entity_text) - 1
+                        entity_url = get_url_by_name(entity_text)
+                        entities.append(
+                            (entity_text, entity_class, str(entity_url), str(entity_begin) + "," + str(entity_end)))
+                    entity_text = ''
+        else:
+            if entity_text != '':
+                entity_begin = sourcetext.find(entity_text)
+                entity_end = entity_begin + len(entity_text) - 1
+                entity_url = get_url_by_name(entity_text)
+                entities.append((entity_text, entity_class, str(entity_url), str(entity_begin) + "," + str(entity_end)))
+            entity_text = ''
+        prev_class = curr_class
+
+    print(entities)
+    return entities
 
 
 class Window(Qt5.QWidget):
@@ -93,11 +133,15 @@ class Window(Qt5.QWidget):
 
         if sender.text() == 'Print':
 
-            print(self.input_text.toPlainText())
+            sourcetext = self.input_text.toPlainText()
+            print(sourcetext)
             self.highlighter = highlight.Highlighter(self.output_text.document())
-            output = use_tagger(self.input_text.toPlainText())
+            output = use_tagger(sourcetext)
+
+            cluster_entities(output)
+
             self.output_text.setText(str(output))
-            self.fill_table(test)
+            self.fill_table(get_table_data(output, sourcetext))
 
         else:
             self.input_text.clear()
