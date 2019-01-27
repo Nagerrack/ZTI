@@ -1,6 +1,5 @@
 venv/
 .idea/
 *.pyc
-*.jar
 *.tsv
 *.ttl
