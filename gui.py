@@ -1,7 +1,7 @@
 import sys
 
 from PyQt5 import QtWidgets as Qt5
-from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QColor, QFont
 from PyQt5.QtWidgets import QTableWidgetItem
 
 import highlight
@@ -54,6 +54,10 @@ def cluster_entities(tagged):
     return entities
 
 
+def correct_type(entity_class, url):
+    return
+
+
 def get_table_data(tagged, sourcetext):
     entities = []
     entity_text = ''
@@ -75,7 +79,13 @@ def get_table_data(tagged, sourcetext):
                     if entity_text != '':
                         entity_begin = sourcetext.find(entity_text)
                         entity_end = entity_begin + len(entity_text) - 1
+                        # if entity_class in ['Not_found', 'Not_on_wiki', 'Other']:
                         entity_url = get_url_by_name(entity_text)
+                        # else:
+                        #    entity_url = get_url_by_name_with_specified_type(entity_text, entity_class)
+                        # if entity_class in ['Not_found', 'Not_on_wiki']:
+                        #     if entity_url != "No data found":
+                        #         entity_class = get_type_from_db_corrected(entity_url)
                         entities.append(
                             (entity_text, entity_class, str(entity_url), str(entity_begin) + "," + str(entity_end)))
                     entity_text = ''
@@ -83,7 +93,13 @@ def get_table_data(tagged, sourcetext):
             if entity_text != '':
                 entity_begin = sourcetext.find(entity_text)
                 entity_end = entity_begin + len(entity_text) - 1
+                # if entity_class in ['Not_found', 'Not_on_wiki', 'Other']:
                 entity_url = get_url_by_name(entity_text)
+                # else:
+                #    entity_url = get_url_by_name_with_specified_type(entity_text, entity_class)
+                # if entity_class in ['Not_found', 'Not_on_wiki']:
+                #     if entity_url != "No data found":
+                #         entity_class = get_type_from_db_corrected(entity_url)
                 entities.append((entity_text, entity_class, str(entity_url), str(entity_begin) + "," + str(entity_end)))
             entity_text = ''
         prev_class = curr_class
@@ -132,6 +148,7 @@ class Window(Qt5.QWidget):
                 table_item = QTableWidgetItem(item)
                 if j == 1:
                     table_item.setForeground(highlight.color_dict.get(item, QColor(0, 0, 0)))
+                    table_item.setFont(QFont("Times", weight=QFont.Bold))
                 self.table.setItem(i, j, table_item)
 
         self.table.resizeColumnsToContents()
@@ -148,6 +165,11 @@ class Window(Qt5.QWidget):
             self.highlighter.define_highlighting_rules(prepare_highlight(output))
 
             print(prepare_highlight(output))
+
+            myFont = QFont()
+            myFont.setBold(True)
+            self.label.setFont(myFont)
+            self.output_text.setFont(myFont)
 
             self.output_text.setText(sourcetext)  # str(output)
             self.fill_table(get_table_data(output, sourcetext))

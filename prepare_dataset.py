@@ -1,5 +1,3 @@
-import re
-
 import rdflib as rd
 from rdflib import Namespace
 
@@ -65,6 +63,17 @@ def get_type_from_db(url):
     else:
         entity_type = 'Not_found'
     return entity_type
+
+
+def get_type_from_db_corrected(url):
+    db_types = get_types_by_url(url)
+    mutual_types = set(types).intersection(db_types)
+    if len(mutual_types) > 0:
+        entity_type = mutual_types.pop()
+    else:
+        entity_type = 'Not_found'
+    return entity_type
+
 
 def find_next(string, substrings, begin_pos):
     for index, char in enumerate(string[begin_pos:]):

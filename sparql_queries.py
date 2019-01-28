@@ -7,12 +7,11 @@ def get_url_by_name(word):
       PREFIX dbpedia: <http://dbpedia.org/resource/>
       SELECT DISTINCT ?subject ?type               
       WHERE{ 
-       ?subject rdf:type dbo:Person.
+       ?subject rdf:type ?type.
         ?subject rdfs:label ?label.
        ?label bif:contains "'""" + word + """'"@en
-        
       }
-      LIMIT 1"""
+      LIMIT 500"""
 
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
@@ -21,11 +20,51 @@ def get_url_by_name(word):
     print(results)
 
     try:
-        url = results["results"]["bindings"][0]["subject"]['value']
+        url = [result['subject']['value'] for result in
+               results["results"]["bindings"]]
+        word = word.replace('.', '')
+        word = word.replace(',', '')
+        word = word.replace(' ', '_')
+        url = [u for u in url if 'dbpedia' and 'resource' and word in u
+               and len(u) >= len('http://dbpedia.org/resource/' + word) and
+               u.replace('http://dbpedia.org/resource/', '')[0] == word[0]]
+        url.sort(key=lambda x: len(x))
+        final_url = url[0]
     except:
-        url = "No data found"
+        final_url = "No data found"
 
-    return url
+    return final_url
+
+
+def get_url_by_name_with_specified_type(word, entity_type):
+    sparql = SPARQLWrapper("http://dbpedia.org/sparql")
+    query = """PREFIX dbo:  <http://dbpedia.org/ontology/>
+      PREFIX dbpedia: <http://dbpedia.org/resource/>
+      SELECT DISTINCT ?subject ?type               
+      WHERE{ 
+       ?subject rdf:type ?type.
+        ?subject rdfs:label ?label.
+       ?label bif:contains "'""" + word + """'"@en
+        FILTER (?type = dbo:""" + entity_type + """)
+      }
+      LIMIT 100"""
+
+    sparql.setQuery(query)
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()
+
+    print(results)
+
+    try:
+        url = [result['subject']['value'] for result in
+               results["results"]["bindings"]]
+        url = [u for u in url if 'dbpedia' in u]
+        url.sort(key=lambda x: len(x))
+        final_url = url[0]
+    except:
+        final_url = "No data found"
+
+    return final_url
 
 
 # def get_url_by_name(word):

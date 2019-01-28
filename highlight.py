@@ -1,5 +1,5 @@
 from PyQt5.QtCore import QRegExp
-from PyQt5.QtGui import QSyntaxHighlighter, QTextCharFormat, QColor
+from PyQt5.QtGui import QSyntaxHighlighter, QTextCharFormat, QColor, QFont
 
 from configuration_data import types
 
@@ -50,9 +50,11 @@ class Highlighter(QSyntaxHighlighter):
         for pattern, text_format in self.highlightingRules:
             expression = QRegExp(pattern)
             index = expression.indexIn(text)
+
             while index >= 0:
                 length = expression.matchedLength()
                 self.setFormat(index, length, text_format)
+
                 index = expression.indexIn(text, index + length)
 
         self.setCurrentBlockState(0)
